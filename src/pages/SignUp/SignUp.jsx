@@ -5,6 +5,8 @@ import * as yup from 'yup';
 import UserRepository from '../../API-Repository/Users/UserRepositoryApi';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '../../Redux/Loader/loaderSlice';
 
 // ✅ Validation schema
 const schema = yup.object().shape({
@@ -18,6 +20,7 @@ const schema = yup.object().shape({
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch=useDispatch();
 
   const {
     register,
@@ -29,6 +32,7 @@ const SignUp = () => {
 
   const onSubmit = async (data) => {
     try {
+      dispatch(showLoader())
       const response = await UserRepository.signUp(data);
       if(response.message){
 
@@ -50,6 +54,9 @@ const SignUp = () => {
         })
 
       }
+    }
+    finally{
+      dispatch(hideLoader())
     }
   };
 

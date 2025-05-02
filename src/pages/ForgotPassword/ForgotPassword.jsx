@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import UserRepository from '../../API-Repository/Users/UserRepositoryApi';
 import { notification } from 'antd';
+import { hideLoader, showLoader } from '../../Redux/Loader/loaderSlice';
 
 const schema = yup.object().shape({
   email: yup.string().email('Enter a valid email').required('Email is required'),
@@ -18,6 +19,7 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data) => {
     try {
+            dispatch(showLoader())
       const result = await UserRepository.forgotPassword(data)
       if (!result?.isPassed) {
         const { fieldError, description, message } = result?.response?.data || {};
@@ -43,8 +45,10 @@ const ForgotPassword = () => {
         placement: 'topRight',
       })
     }
+    finally{
+      dispatch(hideLoader())
+    }
 
-    // Call backend API here, e.g., await UserRepository.forgotPassword(data)
   };
 
   const handleBackToSignIn = () => {

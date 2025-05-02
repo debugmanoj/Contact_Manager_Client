@@ -6,6 +6,7 @@ import UserRepository from '../../API-Repository/Users/UserRepositoryApi';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../Redux/auth/authSlice';
+import { showLoader,hideLoader } from "../../Redux/Loader/loaderSlice";
 import { notification } from 'antd';
 
 const schema = yup.object().shape({
@@ -22,6 +23,7 @@ const SignIn = () => {
 
   const onSubmit = async (data) => {
     try {
+      dispatch(showLoader())
       const result = await UserRepository.signIn(data)
 
       if (!result.isPassed) {
@@ -47,6 +49,9 @@ const SignIn = () => {
         message: "System Error.",
         placement: 'topRight',
       })
+    }
+    finally{
+      dispatch(hideLoader())
     }
 
   };

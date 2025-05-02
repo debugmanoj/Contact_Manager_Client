@@ -4,13 +4,12 @@ import ContactList from '../../components/ContactBook/ContactList';
 import ContactDetails from '../../components/ContactBook/ContactDetails';
 import ModalBox from '../../components/ModalBox/ModalBox';
 import CreateContactForm from '../../components/ContactBook/CreateContactForm';
-import { AiOutlineArrowRight } from "react-icons/ai";
-import contactRepository from "../../API-Repository/Contacts/contactsRepositoryApi"
 import { Form } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { createContactApi, getUserContactsApi } from '../../Redux/contact/contactService';
 import { logout } from '../../Redux/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { hideLoader, showLoader } from '../../Redux/Loader/loaderSlice';
 
 const { Sider, Content, Header } = Layout;
 
@@ -35,30 +34,60 @@ const ContactBook = () => {
 
   useEffect(() => {
     // Fetch contacts from backend API
-    const fetchContacts = async () => {
-      const res = await dispatch(getUserContactsApi(userId));
-
-    };
-
-    fetchContacts();
+    try {
+      dispatch(showLoader())
+      const fetchContacts = async () => {
+        const res = await dispatch(getUserContactsApi(userId));
+  
+      };
+  
+      fetchContacts();  
+    } catch (error) {
+      notification.error({
+        message: "System Error.",
+        placement: 'topRight',
+      })
+    }
+    finally{
+      dispatch(hideLoader())
+    }
+    
   }, [dispatch, userId]);
 
   const handleCreateContact = async () => {
     try {
+      
       const values = await form.validateFields()
-
+      dispatch(showLoader())
       dispatch(createContactApi({ data: values, userId }));
       setIsModalOpen(false)
 
 
     } catch (error) {
-
+      notification.error({
+        message: "System Error.",
+        placement: 'topRight',
+      })
+    }
+    finally{
+      dispatch(hideLoader())
     }
 
 
   };
   const handleLogOut = async () => {
-    dispatch(logout())
+    try {
+      dispatch(showLoader())
+      dispatch(logout())
+    } catch (error) {
+      notification.error({
+        message: "System Error.",
+        placement: 'topRight',
+      })
+    }
+    finally{
+      dispatch(hideLoader())
+    }
     navigate("/")
 
   }
@@ -66,8 +95,6 @@ const ContactBook = () => {
   // Profile Dropdown Menu
   const menu = (
     <Menu>
-      {/* <Menu.Item key="1">Profile</Menu.Item>
-      <Menu.Item key="2">Settings</Menu.Item> */}
       <Menu.Item onClick={handleLogOut} key="3">Logout</Menu.Item>
     </Menu>
   );
@@ -75,13 +102,9 @@ const ContactBook = () => {
   return (
     <>
 
-      <Layout size="small"/* style={{ height: '100vh' }} */ className='font-poppins h-screen'>
+      <Layout size="small" className='font-poppins h-screen'>
 
         <Sider width={280} theme="light" style={{ padding: 16, overflowY: 'auto' }}>
-
-          {/* <Button type="primary"  onClick={() => setIsModalOpen(true)}   className="w-full mb-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
-      <AiOutlineArrowRight />
-</Button> */}
           <div className='text-center font-bold font-poppins text-2xl'>Manage Contacts</div>
           <Button type="primary" onClick={() => setIsModalOpen(true)} className="w-full mb-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md  font-poppins text-xs mt-4">
             + Create Contact

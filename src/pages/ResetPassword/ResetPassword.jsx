@@ -4,9 +4,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import UserRepository from '../../API-Repository/Users/UserRepositoryApi';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '../../Redux/Loader/loaderSlice';
+import { notification } from 'antd';
 
 
-// ✅ Yup schema for password + confirm password validation
+
 const schema = yup.object().shape({
   password: yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
   confirmPassword: yup
@@ -17,33 +20,47 @@ const schema = yup.object().shape({
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const dispatch=useDispatch();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token'); // ✅ Read token from URL
+
+  const token = searchParams.get('token'); 
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError, clearErrors } = useForm({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data) => {
-    if (!token) {
-      setError('token', { message: 'Invalid or expired token' });
-      return;
+    try {
+      if (!token) {
+        setError('token', { message: 'Invalid or expired token' });
+        return;
+      }
+  
+      const payload = {
+        token,
+        newPassword: data.password,
+        confirmPassword:data.confirmPassword
+      };
+      dispatch(showLoader());
+  
+      const result = await UserRepository.resetPassword(payload);
+
+  
+      if (result?.isPassed) {
+        navigate('/');
+      } else {
+        setError('apiError', { message: result?.message || 'Something went wrong' });
+      }  
+    } catch (error) {
+      notification.error({
+        message: "System Error.",
+        placement: 'topRight',
+      })
     }
-
-    const payload = {
-      token,
-      newPassword: data.password,
-      confirmPassword:data.confirmPassword
-    };
-
-    const result = await UserRepository.resetPassword(payload);
-    // ✅ Optional: Handle response here (show success message or redirect)
-
-    if (result?.isPassed) {
-      navigate('/');
-    } else {
-      setError('apiError', { message: result?.message || 'Something went wrong' });
+    finally{
+      dispatch(hideLoader())
     }
+    
   };
 
   return (
