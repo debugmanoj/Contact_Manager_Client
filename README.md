@@ -1,4 +1,4 @@
-#  Contact Manager - React Frontend App
+#  Contact Book - React Frontend App
 
 Welcome to **Contact Manager**, a modern frontend web application built using **React.js**, **Vite**, and **Tailwind CSS**. This app offers Contact management.
 
