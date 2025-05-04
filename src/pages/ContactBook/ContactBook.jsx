@@ -88,7 +88,7 @@ const ContactBook = () => {
     finally{
       dispatch(hideLoader())
     }
-    navigate("/")
+    navigate("/signIn")
 
   }
 

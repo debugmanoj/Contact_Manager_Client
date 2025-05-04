@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import '@ant-design/v5-patch-for-react-19';
 import FullPageLoader from './components/common/FullPageLoader'
 import { useSelector } from 'react-redux';
+import LandingPage from './pages/LadingPage/LandingPage';
 
 
 // import SignIn from './pages/SignIn/SignIn'
@@ -20,7 +21,8 @@ const App = () => {
       {isLoading && <FullPageLoader />}
       <Router>
         <Routes>
-          <Route path="/" element={<Suspense fallback={<FullPageLoader />}><SignIn /></Suspense>} />
+        <Route path="/" element={<Suspense fallback={<FullPageLoader />}><LandingPage /></Suspense>} />
+          <Route path="/signIn" element={<Suspense fallback={<FullPageLoader />}><SignIn /></Suspense>} />
           <Route path="/forgotPassword" element={<Suspense fallback={<FullPageLoader />}><ForgotPassword /></Suspense>} />
           <Route path="/signUp" element={<Suspense fallback={<FullPageLoader />}><SignUp /></Suspense>} />
           <Route path="/contacts" element={<Suspense fallback={<FullPageLoader />}><ContactBook /></Suspense>} />

@@ -52,7 +52,7 @@ const ForgotPassword = () => {
   };
 
   const handleBackToSignIn = () => {
-    navigate("/")
+    navigate("/signIn")
   }
 
   return (
